@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business & organization · CPR Dispatch R&amp;D Wiki</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <span class="kicker">R&amp;D Wiki</span>
+      <span class="name">Community CPR Dispatch</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">Menu</button>
+    <div class="nav-label">Contents</div>
+    <nav class="nav">
+      <a class="" href="index.html"><span class="idx">00</span><span>Overview</span></a>
+      <a class="" href="technical.html"><span class="idx">01</span><span>Technical track</span></a>
+      <a class="active" href="business.html"><span class="idx">02</span><span>Business & organization</span></a>
+      <a class="" href="experiment.html"><span class="idx">03</span><span>Experiment reference</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      A record of an AI-assisted delivery experiment.<br>
+      The product is the process.
+    </div>
+  </aside>
+  <main class="content">
+    <div class="content-inner">
+
+<p class="eyebrow">02 · Business &amp; organization track</p>
+<h1>How the work was run, what it produced, what it cost</h1>
+<p class="lede">The same three weeks, read for the questions a team lead or a
+budget-holder asks: how were people organized, how much did they ship, what did it cost,
+and what risks does this way of working carry. These are observations from a testbed, not
+a sales case.</p>
+
+<h2>The operating model</h2>
+<p>The greenfield restart adopted a deliberately light structure, designed around the
+retrospective's lessons rather than around a large-project template.</p>
+<ul>
+  <li><strong>One owner per repo, rotating each sprint.</strong> The owner integrates,
+  makes local decisions, and documents their way of working. Rotation means each person
+  passes through every repo and gives and receives feedback on the others' methods.</li>
+  <li><strong>A contract session on day 1 of every sprint.</strong> Before any work is
+  split, the shared contract (endpoints, shapes, events, error codes) is agreed and
+  pinned in a shared artifact — the direct mitigation of "agree the contract before
+  parallelizing."</li>
+  <li><strong>Each repo keeps its own harness.</strong> Structural changes to shared
+  pieces are agreed by everyone; touching them mid-sprint without warning is out, because
+  it destabilizes others' work.</li>
+  <li><strong>Zero premature complexity.</strong> A greenfield restart is the perfect
+  temptation to build "the definitive harness" on day 1; the explicit antidote is that
+  every new convention must be born from a friction already felt, not anticipated.</li>
+</ul>
+
+<h2>The three-week organizational arc</h2>
+<p>The shape of the team changed every week — and output rose as it got smaller, because
+the method, not the headcount, was doing the work.</p>
+<ul class="timeline">
+  <li>
+    <span class="t-date">Week 1 — two people, fully paired</span>
+    <div class="t-body">Planning, implementation, and review done together. Slower by
+    design, but everything was agreed and no rework came from a misunderstanding between
+    the pair. Established that the process is resumable by a different person.</div>
+  </li>
+  <li>
+    <span class="t-date">Week 2 — two parallel streams</span>
+    <div class="t-body">For the first time, two streams ran at once, one person each, split
+    by application. The main friction was the "restack" — when one stream merges, the
+    other's stack must be brought up to date. Working in different applications avoided
+    collisions.</div>
+  </li>
+  <li>
+    <span class="t-date">Week 3 — one developer, separate QA</span>
+    <div class="t-body">All application work ran through a single developer with several
+    AI work-streams at once; testing sat with a separate QA person on a different project,
+    raising bugs and enhancements. Highest-output week of the three.</div>
+  </li>
+</ul>
+
+<h2>Output</h2>
+<div class="stats">
+  <div class="stat"><div class="v">57</div><div class="l">pull requests in week 3</div></div>
+  <div class="stat"><div class="v">+73%</div><div class="l">vs. week 2, with fewer people</div></div>
+  <div class="stat"><div class="v">~21k</div><div class="l">lines of code, week 3</div></div>
+</div>
+<p>Output rose across the three weeks — 21 → 33 → 57 pull requests — while the team went
+from two people to one. The stated reason is the way of working: the machine reviews every
+change and runs the safety checks, so a change can merge without a person reading every
+line by hand. Fifty-seven finished, reviewed changes from one developer in a week is not
+achievable with code written and reviewed entirely by hand.</p>
+
+<h2>Cost</h2>
+<p>Cost visibility was the most uncomfortable gap in the process for the first two weeks.
+The Claude Code token was created directly in the terminal rather than through the console
+where an API key would be issued, so there was <strong>no per-run or per-week spend to look
+at</strong>. Every cost decision in week 2 — one review pass instead of two, the stronger
+model instead of the cheaper one — was made without the number.</p>
+<p>In week 3, because it was one developer on one machine, usage could be read straight from
+the sessions — the full cost of building the app that week, not a sample.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Week 3 measure</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Assistant turns</td><td class="num">~5,300</td></tr>
+    <tr><td>Sessions</td><td class="num">~80</td></tr>
+    <tr><td>Model usage</td><td class="num">~19.3M tokens of real work</td></tr>
+    <tr><td>Estimated cost</td><td class="num">~$1,375 for the week</td></tr>
+    <tr><td>Cost per pull request</td><td class="num">~$24</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note">
+  <span class="note-label">How to read the dollar figure</span>
+  <p>It is an estimate at standard model prices, to give it a scale a budget-holder
+  recognizes; the team pays through a flat subscription, so there is no per-item bill. Most
+  of the usage is the model re-reading the same context as it works through stacked changes
+  — by far the cheapest part. The headline: <strong>a finished, tested, reviewed change
+  costs on the order of twenty-five dollars</strong> of model usage.</p>
+</div>
+<p>Two cost findings carry over from the earlier controlled experiment (see the
+<a href="experiment.html">experiment reference</a>): the money is <strong>not</strong>
+mainly in the model that writes the code — planning, coordinating, and re-verifying
+dominate — and <strong>a cheaper implementation model was not cheaper</strong> at this
+stage, because it needed more attempts and more human re-checking to reach the same bar.</p>
+
+<h2>Risks we can see</h2>
+<ul>
+  <li><strong>Single-person concentration.</strong> The week-3 output and its main risk are
+  the same fact: all application work ran through one developer. High output, but if that
+  person is unavailable, the work stops. The mitigation is that the plan lives as a tracker
+  issue anyone could pick up cold.</li>
+  <li><strong>Expertise gaps don't disappear.</strong> Nobody on the week-1 pair had done an
+  AWS deployment before; that work still got produced. If you don't want to trust everything
+  to the AI, you still have to learn the subject, or wrong things can pass unseen.</li>
+  <li><strong>Parallel streams can clash.</strong> Week 3 had one case where several
+  AI work-streams collided and needed a quick fix to <code>main</code> — small this time,
+  but the kind of thing to watch as more work runs in parallel.</li>
+  <li><strong>The QA↔development loop needs to scale.</strong> QA and development sit in
+  different projects; the findings flow needs to be cleaner as the team grows.</li>
+</ul>
+
+<h2>What this suggests — as observations</h2>
+<div class="note finding">
+  <span class="note-label">Reading, not recommendation</span>
+  <p>At an early stage, the lever is not the AI on its own — it is human organization,
+  experiment isolation, and convention maturity. The tooling and the models pay off once
+  the project has enough mass and structure to support them.</p>
+</div>
+<ul>
+  <li><strong>On future team shapes:</strong> a small team plus a trustworthy pipeline can
+  produce at a rate normally associated with a larger one — provided the safety checks stay
+  strong and the work stays resumable. The constraint that replaces headcount is review
+  trust and context hygiene, not the number of hands.</li>
+  <li><strong>On cost:</strong> at this scale the dominant cost is human-in-the-loop
+  orchestration, not model tokens; the model tier barely moves the total. Cheaper models
+  become interesting only once conventions are mature enough to make them safe — a "not
+  yet," revisited as the codebase grows.</li>
+  <li><strong>On applicability to client work:</strong> the transferable asset is the
+  <em>way of working</em> — an instrumented, traceable pipeline with plan-as-state and
+  deterministic gates — more than any single application. Whether that generalizes beyond a
+  testbed is exactly what the ongoing work is meant to find out.</li>
+</ul>
+
+<div class="pager">
+  <a href="technical.html"><span class="p-dir">← Previous</span>Technical track</a>
+  <a href="experiment.html" style="text-align:right"><span class="p-dir">Next →</span>Experiment reference</a>
+</div>
+
+    </div>
+  </main>
+</div>
+<script>
+  var b=document.getElementById('menuBtn'),s=document.getElementById('sidebar');
+  if(b){b.addEventListener('click',function(){s.classList.toggle('open');});}
+</script>
+</body>
+</html>

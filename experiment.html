@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Experiment reference · CPR Dispatch R&amp;D Wiki</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <span class="kicker">R&amp;D Wiki</span>
+      <span class="name">Community CPR Dispatch</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">Menu</button>
+    <div class="nav-label">Contents</div>
+    <nav class="nav">
+      <a class="" href="index.html"><span class="idx">00</span><span>Overview</span></a>
+      <a class="" href="technical.html"><span class="idx">01</span><span>Technical track</span></a>
+      <a class="" href="business.html"><span class="idx">02</span><span>Business & organization</span></a>
+      <a class="active" href="experiment.html"><span class="idx">03</span><span>Experiment reference</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      A record of an AI-assisted delivery experiment.<br>
+      The product is the process.
+    </div>
+  </aside>
+  <main class="content">
+    <div class="content-inner">
+
+<p class="eyebrow">03 · Experiment reference</p>
+<h1>Model &amp; harness comparison — summary card</h1>
+<p class="lede">A controlled experiment from an earlier phase asked a question with a real
+budget implication: can a cheaper model helped by automated quality gates match a stronger
+model with no gates — and cost less? This page is the short version; both tracks link here.
+The full deep-dive lives in the project's own documents.</p>
+
+<div class="note">
+  <span class="note-label">Scope &amp; caveat</span>
+  <p>This experiment ran in the <strong>earlier phase</strong>, on the first backend
+  (TypeScript / NestJS), before the greenfield restart described in the rest of this wiki
+  (whose backend is Java / Spring). Cost figures are approximate, captured with external
+  tooling — good for ranking the arms against each other, not for billing. Every claim is
+  "for this use case, at this stage."</p>
+</div>
+
+<h2>The setup</h2>
+<p>One representative feature — incident CRUD — was built several ways from an identical
+starting point, with identical after-the-fact quality checks on every arm. The variables:
+which model plans, which model implements, and whether the deterministic sensors run
+inside the build loop or only afterward.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Arm</th><th>Plan</th><th>Implement</th><th>Gate in loop</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td class="num">A1</td><td>Opus</td><td>Sonnet</td><td>No</td><td><span class="chip warn">4/6 clean</span> · ~$4.12 · &lt;1 hr</td></tr>
+    <tr><td class="num">B2</td><td>Sonnet</td><td>Haiku</td><td>Yes</td><td><span class="chip pass">6/6 clean</span> · ~$7.66 · ~2 hrs</td></tr>
+    <tr><td class="num">C</td><td>Sonnet</td><td>Sonnet + Haiku</td><td>Yes + 1 rule</td><td><span class="chip pass">6/6 clean</span> · ~$4.03 · ~45 min</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:14px;color:var(--muted)">"Clean" = how many of six deterministic
+sensors pass. 6/6 means no hygiene debt; 4/6 means working code that still leaves
+maintainability debt for someone to service later.</p>
+
+<h2>The headlines</h2>
+<ul>
+  <li><strong>The cheap tier was not cheaper.</strong> The all-Haiku arm (B2) was the most
+  expensive implementation of the three — it needed more attempts, redo cycles, and
+  correction loops to reach the same finish line. Price per token is not price per
+  result.</li>
+  <li><strong>The cheap-model experience was worse.</strong> It took roughly twice the
+  wall-clock, ignored explicit written spec decisions, and twice reported failing work as
+  "done" — caught only by independently re-running the checks. That human re-verification
+  is a real cost that never shows in a token bill.</li>
+  <li><strong>What actually improved quality was the gate, and it is model-agnostic.</strong>
+  The strong-model arm was already 4/6 clean with no gate; the jump to 6/6 came from the
+  in-loop sensor gate plus one encoded convention — which helps the strong model exactly as
+  much. So the gate does not create a case for cheap models; if anything it removes one.</li>
+  <li><strong>Cost is not the bottleneck.</strong> Implementation was about $4 per feature;
+  the dominant cost is the human-in-the-loop work around it — planning, coordinating,
+  re-verifying — which the model tier does not change.</li>
+  <li><strong>Where routing paid:</strong> keep the strong model on the hard,
+  structure-defining slice. Routing the easy, derivative slices to the cheap model saved
+  only a couple of dollars against added coordination and risk — marginal at this scale.</li>
+</ul>
+
+<div class="note finding">
+  <span class="note-label">The one-line takeaway</span>
+  <p>For this use case, at this stage, there is no case for lower-tier models: the cheap
+  tier was slower and not cheaper, even with a quality gate around it — and because that
+  gate is model-agnostic, it helps the strong models just as much, leaving the cheap tier
+  no advantage to offer. A "not yet," not a "never": the door reopens as the codebase
+  matures and enough conventions can be encoded to make the cheap tier safe.</p>
+</div>
+
+<h2>The recommendation it produced</h2>
+<ul>
+  <li><strong>Plan with the strong model</strong> where the design is genuinely open; use a
+  cheaper planner where the contract is already pinned (don't pay for reasoning on
+  transcription-grade CRUD).</li>
+  <li><strong>Implement with the mid tier for now</strong>, and set the cheapest tier aside
+  for this kind of work until conventions mature.</li>
+  <li><strong>Keep investing in the harness</strong> — the cheap, deterministic,
+  model-agnostic layer that actually moved quality.</li>
+  <li><strong>Keep the strong model on structure-defining slices</strong> — the one routing
+  rule that clearly paid.</li>
+</ul>
+
+<h2>Where the full detail lives</h2>
+<p>This card intentionally omits the arm-by-arm cost derivations, the tooling-bug
+confound that inflated one arm, and the full cross-arm analysis. Those live in the
+project's deep-dive documents, kept outside this wiki:</p>
+<ul>
+  <li><code>model-and-harness-comparison.md</code> — the full report and every caveat.</li>
+  <li><code>model-comparison-presentation-script.md</code> — the slide-by-slide walkthrough
+  for a management audience.</li>
+</ul>
+
+<div class="pager">
+  <a href="business.html"><span class="p-dir">← Previous</span>Business &amp; organization</a>
+  <a href="index.html" style="text-align:right"><span class="p-dir">Back to →</span>Overview</a>
+</div>
+
+    </div>
+  </main>
+</div>
+<script>
+  var b=document.getElementById('menuBtn'),s=document.getElementById('sidebar');
+  if(b){b.addEventListener('click',function(){s.classList.toggle('open');});}
+</script>
+</body>
+</html>

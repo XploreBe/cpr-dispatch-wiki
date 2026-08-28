@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Technical track · CPR Dispatch R&amp;D Wiki</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <span class="kicker">R&amp;D Wiki</span>
+      <span class="name">Community CPR Dispatch</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">Menu</button>
+    <div class="nav-label">Contents</div>
+    <nav class="nav">
+      <a class="" href="index.html"><span class="idx">00</span><span>Overview</span></a>
+      <a class="active" href="technical.html"><span class="idx">01</span><span>Technical track</span></a>
+      <a class="" href="business.html"><span class="idx">02</span><span>Business & organization</span></a>
+      <a class="" href="experiment.html"><span class="idx">03</span><span>Experiment reference</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      A record of an AI-assisted delivery experiment.<br>
+      The product is the process.
+    </div>
+  </aside>
+  <main class="content">
+    <div class="content-inner">
+
+<p class="eyebrow">01 · Technical track</p>
+<h1>The harness, and how the pipeline earned trust</h1>
+<p class="lede">The recurring technical thread across the three weeks is a single move:
+take everything a machine can decide, and let a machine decide it — deterministically,
+cheaply, and before a human ever reads the diff. What is left for people and for the
+model is the judgement only they can supply.</p>
+
+<h2>The harness model</h2>
+<p>We treat the harness as <em>everything around the model</em>: the controls that steer
+an agent before it acts, and the controls that check the result after it acts.</p>
+<ul>
+  <li><strong>Guides</strong> steer the agent <em>before</em> it acts — skills, specs,
+  <code>CLAUDE.md</code> constraints, the pinned contract.</li>
+  <li><strong>Sensors</strong> check the result <em>after</em> it acts — type checks,
+  linters, architecture rules, duplication and dead-code detectors, tests.</li>
+</ul>
+<div class="note">
+  <span class="note-label">The economic principle</span>
+  <p>Prefer computational work (CPU: deterministic, effectively free, repeatable) over
+  inferential work (the model: probabilistic, costs tokens, varies per run). Wherever a
+  quality property can be checked by a deterministic tool, push it onto the CPU and save
+  the model budget for design and implementation.</p>
+</div>
+
+<h2>Executable conventions beat prose conventions</h2>
+<p>A convention written only in prose can be skipped by a weak follower — human or model.
+The durable form of a convention is an executable check. The clearest evidence came from
+the earlier experiment: a documented rule ("persist through the repository, not raw SQL")
+was ignored by the cheap model until it became a lint rule — after which the same
+deviation simply could not be merged. Every sensor that exists is a convention the model
+can no longer ignore.</p>
+<div class="note finding">
+  <span class="note-label">Finding</span>
+  <p>The reusable, model-agnostic quality win is the in-loop sensor gate plus conventions
+  encoded as checks — not the choice of model. A rule, once it exists, binds every model
+  equally.</p>
+</div>
+
+<h2>Review moved into CI (week 2)</h2>
+<p>In week 1, review ran from our own terminals. In week 2 it moved into GitHub Actions:
+opening a pull request fires a review workflow that invokes the repo's own review skill,
+and findings land as inline comments on the diff. The implementing agent then waits for
+that feedback and fixes it inside the same slice, before the next slice starts.</p>
+<p>Three details are load-bearing:</p>
+<ul>
+  <li><strong>It runs the stronger model explicitly.</strong> The action's default is a
+  cheaper model; that is not what we want reviewing a slice.</li>
+  <li><strong>It reviews against the pull request's base branch, not <code>main</code>.</strong>
+  Because we stack pull requests, a diff against <code>main</code> would re-flag work
+  already reviewed in a lower layer.</li>
+  <li><strong>It runs once.</strong> The workflow counts existing review comments and stops
+  if it finds any; re-reviews are on-demand from a local session.</li>
+</ul>
+<div class="note">
+  <span class="note-label">Observation — how many review passes?</span>
+  <p>On one slice we fixed the first review's findings, then deliberately ran review a
+  second time expecting it to be clean. It found more. We fixed those, ran a third pass,
+  and that was clean. So <strong>one pass is a choice, not a finding</strong>: a second
+  pass demonstrably finds real defects. We run one anyway, because a second pass on every
+  pull request is a cost we could not yet see.</p>
+</div>
+
+<h2>Determinism instead of judgment (week 2)</h2>
+<p>The week-1 bottleneck was review. The week-2 answer was to stop asking any reviewer —
+human or model — to decide anything a machine can decide.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Layer</th><th>What became deterministic</th></tr></thead>
+  <tbody>
+    <tr><td>Backend</td><td>Error Prone in the compiler with warnings as errors; NullAway with JSpecify and <code>@NullMarked</code>; a duplication (CPD) check; an 80% line-coverage floor on <code>verify</code>.</td></tr>
+    <tr><td>Dispatcher app</td><td>Lint rules beyond the recommended preset; <code>knip</code> for dead code and unused dependencies; <code>jscpd</code> for duplication; coverage measured and gated in the test command.</td></tr>
+    <tr><td>Structure</td><td>Hexagonal layers inside feature slices, with ArchUnit failing the build when a layer boundary is crossed.</td></tr>
+    <tr><td>Process</td><td>A job that fails when a merged migration file changes (a fresh test database accepts any checksum, so the job checks the diff itself); a conventional-commit hook; a hook blocking agent pushes to <code>main</code>.</td></tr>
+  </tbody>
+</table>
+</div>
+<p>All of it sits behind one CI file where per-application jobs run only when the diff
+touches that application, and "all builds green" is the single required status check.</p>
+<div class="readout">
+  <div class="r-head">[verify] backend — sensor battery, one command</div>
+  <span class="pass">  PASS</span>  verify:types<br>
+  <span class="pass">  PASS</span>  verify:lint<br>
+  <span class="pass">  PASS</span>  verify:arch<br>
+  <span class="pass">  PASS</span>  verify:dup<br>
+  <span class="pass">  PASS</span>  verify:deadcode<br>
+  <span class="pass">  PASS</span>  verify:test<br>
+  <span class="dim">[verify] PASS: all sensors clean.</span>
+</div>
+
+<h2>Plan-as-state and resumability</h2>
+<p>The plan for a feature is not a document or a conversation — it is a tracker issue
+broken into sub-issues, one per slice, each naming its own base branch. That is what makes
+handoff work: if one person stops mid-stack, the next reads the plan issue and the merge
+state and knows exactly which slice is next. The strongest single claim from week 1 was
+that <strong>the process is resumable by a different person</strong> — no verbal handover,
+no stale document to reconcile.</p>
+<h3>One slice, one pull request</h3>
+<p>A week-1 failure taught the rule. The orchestrator delegated slices to subagents and
+then started repairing their work — and because we stack pull requests, those repairs
+landed in the wrong slice (a defect surfaced in one layer got fixed several layers up).
+The fix was a rule: the orchestrator does not write code, and the loop is implement slice
+→ review slice → <em>then</em> the next slice. A finding in a layer can only be repaired in
+that layer, because the layer above does not exist yet.</p>
+
+<h2>Keeping context clean</h2>
+<p>Two week-2 disciplines target the fact that everything the model reads is input:</p>
+<ul>
+  <li><strong>A comments rule.</strong> The model wrote documentation-style comments in
+  code. We restricted code comments to four genres — a local constraint, an operational
+  trap, a decision citation, an external workaround — and removed anything else, applying
+  the rule backwards to the whole repository in one commit.</li>
+  <li><strong>One home per fact.</strong> Before a fact is written anywhere, three tests:
+  does it deserve to exist (what a reader can derive from the code stays undocumented);
+  when is it needed (that picks the surface — an always-loaded file, a path-scoped rule, a
+  skill, or a README); and may a second copy exist (only when load-bearing, otherwise a
+  link).</li>
+</ul>
+
+<h2>Three-week technical shipping log</h2>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Week</th><th>Shipped</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td>Dispatcher app end to end (create / list / update an incident); backend API, schema, migrations; first scaffolding and harness; AWS dev environment with a business-hours start/stop schedule. Three delivery skills built the same week.</td></tr>
+    <tr><td class="num">2</td><td>Maps in the dispatcher console (MapLibre GL, OpenFreeMap tiles, Photon geocoding); first version of the Volunteer app; validation hardening; a not-found/catch-all route; a delete endpoint for QA cleanup; self-deploying merges to <code>main</code>.</td></tr>
+    <tr><td class="num">3</td><td>Real sign-in and accounts for both apps (server-side, invite codes); the end-to-end volunteer response flow — on-call status, proximity match, alert, accept/decline back to the dispatcher; live volunteers on the map; incident search, cancel-confirm and restore, timer stop on close.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Technical findings</h2>
+<div class="note finding">
+  <span class="note-label">What held up</span>
+  <p><strong>Deterministic sensors are the cheap, model-agnostic quality lever.</strong>
+  Inference is strong at behaviour (high coverage, passing tests) and weak at hygiene
+  (duplication, dead code, complexity); cheap CPU checks catch the hygiene the model
+  misses, for near-zero marginal cost.</p>
+</div>
+<ul>
+  <li><strong>Encode conventions or lose them.</strong> A prose rule a weak follower can
+  skip becomes binding the moment it is a check.</li>
+  <li><strong>Move review into the loop, per slice.</strong> Gating each slice before the
+  next keeps fixes in the layer that owns them.</li>
+  <li><strong>Plan-as-state makes work resumable and reviewable in minutes.</strong></li>
+  <li><strong>Two things sensors can't catch</strong> still need a human or a targeted
+  test: a model reporting unfinished work as "done", and byte-exact behavioural-contract
+  details.</li>
+</ul>
+
+<p style="margin-top:34px;font-size:14.5px;color:var(--muted)">The earlier controlled
+comparison behind several of these claims — model tiers versus harness configuration — is
+summarized in the <a href="experiment.html">experiment reference</a>.</p>
+
+<div class="pager">
+  <a href="index.html"><span class="p-dir">← Back</span>Overview</a>
+  <a href="business.html" style="text-align:right"><span class="p-dir">Next →</span>Business &amp; organization</a>
+</div>
+
+    </div>
+  </main>
+</div>
+<script>
+  var b=document.getElementById('menuBtn'),s=document.getElementById('sidebar');
+  if(b){b.addEventListener('click',function(){s.classList.toggle('open');});}
+</script>
+</body>
+</html>

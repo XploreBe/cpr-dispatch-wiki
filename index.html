@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · CPR Dispatch R&amp;D Wiki</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <span class="kicker">R&amp;D Wiki</span>
+      <span class="name">Community CPR Dispatch</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">Menu</button>
+    <div class="nav-label">Contents</div>
+    <nav class="nav">
+      <a class="active" href="index.html"><span class="idx">00</span><span>Overview</span></a>
+      <a class="" href="technical.html"><span class="idx">01</span><span>Technical track</span></a>
+      <a class="" href="business.html"><span class="idx">02</span><span>Business & organization</span></a>
+      <a class="" href="experiment.html"><span class="idx">03</span><span>Experiment reference</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      A record of an AI-assisted delivery experiment.<br>
+      The product is the process.
+    </div>
+  </aside>
+  <main class="content">
+    <div class="content-inner">
+
+<p class="eyebrow">Overview</p>
+<h1>Community CPR Dispatch — an R&amp;D record</h1>
+<p class="lede">This wiki records what happened while building an emergency-response
+application as a testbed for AI-assisted software delivery — and what we learned
+about process, models, and tooling along the way. The application is the thing we
+can click on. The <strong>method</strong> is what we are actually studying.</p>
+
+<div class="note">
+  <span class="note-label">What this is</span>
+  <p>Community CPR Dispatch connects emergency dispatchers with nearby trained
+  volunteers who can start CPR before an ambulance arrives. We build it as real
+  software, but its purpose here is research: <strong>the product is not the
+  goal</strong>. The goal is to learn how humans and AI agents collaborate to ship
+  software reliably, to measure where the real efficiencies and costs are, and to
+  mature a delivery <em>harness</em> — the conventions, tooling, and process around
+  the model.</p>
+</div>
+
+<h2>How to read this wiki</h2>
+<p>The record is written as two tracks that stand on their own. Read either one, or
+both — they share this overview and a single set of numbers.</p>
+
+<div class="tracks">
+  <a class="track-card" href="technical.html">
+    <span class="tc-idx">01 · Technical</span>
+    <h3>The technical track</h3>
+    <p>The harness: guides and deterministic sensors, executable conventions,
+    review moved into CI, and how the pipeline became trustworthy without a human
+    reading every line.</p>
+  </a>
+  <a class="track-card" href="business.html">
+    <span class="tc-idx">02 · Business &amp; org</span>
+    <h3>The business &amp; organization track</h3>
+    <p>How the team was run, the output and cost numbers, the risks we can see, and
+    what it suggests about future team shapes and client work.</p>
+  </a>
+</div>
+<p style="font-size:14.5px;color:var(--muted)">A separate
+<a href="experiment.html">experiment reference</a> summarizes an earlier controlled
+comparison of model tiers and harness configurations; both tracks link to it.</p>
+
+<h2>Timeline</h2>
+<ul class="timeline">
+  <li>
+    <span class="t-date">Earlier phase</span>
+    <div class="t-body"><strong>First attempt.</strong> An initial build (TypeScript /
+    NestJS backend) plus a controlled model-and-harness cost/quality experiment. It
+    also surfaced the friction that triggered a reset — see the
+    <a href="experiment.html">experiment reference</a>.</div>
+  </li>
+  <li>
+    <span class="t-date">Retrospective</span>
+    <div class="t-body"><strong>The reset.</strong> A process retrospective named
+    <em>premature complexity</em> as the root cause of most friction, and led to a
+    greenfield restart from zero with a deliberately simpler operating model.</div>
+  </li>
+  <li>
+    <span class="t-date">Aug 14 · Week 1</span>
+    <div class="t-body"><strong>Prove the pipeline delivers an app.</strong> Two people,
+    paired on every step. Dispatcher app + delivery toolkit built and deployed to AWS
+    in one week. Finding: the process is resumable by a different person; the
+    bottleneck is review.</div>
+  </li>
+  <li>
+    <span class="t-date">Aug 21 · Week 2</span>
+    <div class="t-body"><strong>Make the pipeline trustworthy.</strong> Review moved
+    into CI; machine-decidable checks became machine checks; first two parallel
+    streams. Cost visibility was the uncomfortable gap.</div>
+  </li>
+  <li>
+    <span class="t-date">Aug 28 · Week 3</span>
+    <div class="t-body"><strong>The product does its real job.</strong> The end-to-end
+    volunteer response flow works. One developer merged 57 pull requests; cost numbers
+    finally became visible.</div>
+  </li>
+</ul>
+
+<h2>The reset, in brief</h2>
+<p>The retrospective's central thesis is worth stating once here, because it explains
+why the operating model looks the way it does. Most friction in the first attempt was
+<strong>not</strong> a tooling or model problem — it came from applying the ceremony
+and parallelism of a large project to one that was still small and immature. The root
+cause, stated plainly: we tried to build something too elaborate, too early, before
+thinking through what it required.</p>
+<p>The corollary lessons that shaped the restart:</p>
+<ul>
+  <li><strong>Agree the contract before parallelizing.</strong> When two parts share a
+  contract (front/back), either one person holds the whole contract, or the contract is
+  agreed first. Parallelizing without it doesn't save time — it moves the cost,
+  multiplied, into integration.</li>
+  <li><strong>Executable conventions mature <em>with</em> the project.</strong> You
+  cannot write a rule for code that does not exist yet. Delegating to cheaper models
+  needs conventions encoded as checks; those only exist once there is structure to
+  distil them from. A "not yet," not a "never."</li>
+  <li><strong>Isolate experiments.</strong> A co-edited monorepo with shared pieces
+  (skills, <code>CLAUDE.md</code>) contaminates experiments; conclusions get weaker.</li>
+  <li><strong>Everything the model sees is context.</strong> A stale backlog, discarded
+  features left lying around, or business-analysis jargon in a technical spec are all
+  noise injected into the harness. Discarding something means removing it from context,
+  not just marking it discarded.</li>
+  <li><strong>Requirements are incomplete and changing — by default.</strong> The
+  process should absorb change rather than assume a complete, static specification.</li>
+</ul>
+<p>The guiding principle carried into the restart: <strong>zero premature
+complexity</strong> — every sprint introduces only the machinery that sprint's work
+already demands.</p>
+
+<h2>The three weeks at a glance</h2>
+<p>The single set of numbers both tracks refer back to.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Week</th><th>Pull requests</th><th>Lines</th><th>People</th><th>Focus</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1 · Aug 14</td><td class="num">21</td><td class="num">~11,500</td><td class="num">2</td><td>Built the Dispatcher app</td></tr>
+    <tr><td class="num">2 · Aug 21</td><td class="num">33</td><td class="num">~12,600</td><td class="num">2</td><td>Made the process safe &amp; repeatable</td></tr>
+    <tr><td class="num">3 · Aug 28</td><td class="num">57</td><td class="num">~21,000</td><td class="num">1</td><td>Built the core response flow</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:14px;color:var(--muted)">Line counts are from git history;
+week&nbsp;3 output was up 73% on week&nbsp;2 with fewer people. What those numbers cost,
+and what drove them, is on the two tracks.</p>
+
+<div class="meta-foot">Testbed: Community CPR Dispatch · Status: active · Records weeks of 2026-08-14 → 2026-08-28</div>
+
+    </div>
+  </main>
+</div>
+<script>
+  var b=document.getElementById('menuBtn'),s=document.getElementById('sidebar');
+  if(b){b.addEventListener('click',function(){s.classList.toggle('open');});}
+</script>
+</body>
+</html>
