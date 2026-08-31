@@ -20,6 +20,7 @@
       <a class="" href="technical.html"><span class="idx">01</span><span>Technical track</span></a>
       <a class="" href="business.html"><span class="idx">02</span><span>Business & organization</span></a>
       <a class="active" href="experiment.html"><span class="idx">03</span><span>Experiment reference</span></a>
+      <a class="" href="qa.html"><span class="idx">04</span><span>QA automation</span></a>
     </nav>
     <div class="sidebar-foot">
       A record of an AI-assisted delivery experiment.<br>
@@ -95,6 +96,49 @@ maintainability debt for someone to service later.</p>
   matures and enough conventions can be encoded to make the cheap tier safe.</p>
 </div>
 
+<h2>A second comparison — generating a whole test suite (run 2)</h2>
+<p>A later, independent experiment in the QA repo asked the same tier question of a different
+task: not building a feature, but <strong>generating a Playwright UI suite</strong>. Three models
+wrote a suite for the Dispatcher console from byte-identical inputs — the same <code>DOM.md</code>,
+the same app checkout, the same prompt, a 10,000-token thinking budget for all three. Model id was
+the only variable.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Measure</th><th>haiku</th><th>sonnet</th><th>opus</th></tr></thead>
+  <tbody>
+    <tr><td>Wall clock</td><td class="num">6m 38s</td><td class="num">32m 48s</td><td class="num">36m 36s</td></tr>
+    <tr><td>Cost</td><td class="num">$0.56</td><td class="num">$8.52</td><td class="num">$12.66</td></tr>
+    <tr><td>Designed cases → tests</td><td class="num">66 → 88</td><td class="num">36 → 43</td><td class="num">52 → 63</td></tr>
+    <tr><td>Ran its own suite?</td><td class="num">No</td><td class="num">Yes · 3×</td><td class="num">Yes · 2×</td></tr>
+    <tr><td>Runnable as delivered</td><td><span class="chip fail">DOA</span></td><td><span class="chip pass">Yes</span></td><td><span class="chip pass">Yes</span></td></tr>
+    <tr><td>Cost per passing test</td><td class="num">n/a</td><td class="num">$0.20</td><td class="num">$0.20</td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><strong>Best compromise: sonnet.</strong> A third cheaper and four minutes faster than opus
+  at an identical cost-per-passing-test. It ran its own suite three times and fixed three real
+  bugs in its first draft. What you give up is breadth (no pagination, deep-link or resilience
+  coverage).</li>
+  <li><strong>Highest quality: opus.</strong> Best Page Object discipline, real traceability tags,
+  table-driven boundary coverage, stubbed error/empty states — worth the extra ~$4 when the suite
+  is a long-lived asset.</li>
+  <li><strong>haiku was not a cheap alternative — it was no alternative.</strong> On paper the
+  best value (most cases, 15× cheaper, 5× faster); in practice it never ran what it wrote, and the
+  suite could not execute at all — a fixture built its context without the base URL, so the first
+  navigation of nearly every test threw. Behind that, a dozen tests carried no assertion.
+  <strong>Usable for test design, not for test binding.</strong></li>
+</ul>
+<div class="note finding">
+  <span class="note-label">The run-2 takeaway</span>
+  <p>The single largest quality signal was simply <strong>whether the model ran its own suite</strong> —
+  it separated the two usable suites from the unusable one, and no static metric predicted it.
+  The generation lane echoes the delivery finding: price per token is not price per result, and
+  the cheapest tier's unverified "done" is the expensive part.</p>
+</div>
+<p style="font-size:14px;color:var(--muted)">This comparison and the QA pipeline that hosted it
+are detailed on the <a href="qa.html">QA automation</a> page.</p>
+
 <h2>The recommendation it produced</h2>
 <ul>
   <li><strong>Plan with the strong model</strong> where the design is genuinely open; use a
@@ -120,7 +164,7 @@ project's deep-dive documents, kept outside this wiki:</p>
 
 <div class="pager">
   <a href="business.html"><span class="p-dir">← Previous</span>Business &amp; organization</a>
-  <a href="index.html" style="text-align:right"><span class="p-dir">Back to →</span>Overview</a>
+  <a href="qa.html" style="text-align:right"><span class="p-dir">Next →</span>QA automation</a>
 </div>
 
     </div>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA automation · CPR Dispatch R&amp;D Wiki</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <span class="kicker">R&amp;D Wiki</span>
+      <span class="name">Community CPR Dispatch</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">Menu</button>
+    <div class="nav-label">Contents</div>
+    <nav class="nav">
+      <a class="" href="index.html"><span class="idx">00</span><span>Overview</span></a>
+      <a class="" href="technical.html"><span class="idx">01</span><span>Technical track</span></a>
+      <a class="" href="business.html"><span class="idx">02</span><span>Business & organization</span></a>
+      <a class="" href="experiment.html"><span class="idx">03</span><span>Experiment reference</span></a>
+      <a class="active" href="qa.html"><span class="idx">04</span><span>QA automation</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      A record of an AI-assisted delivery experiment.<br>
+      The product is the process.
+    </div>
+  </aside>
+  <main class="content">
+    <div class="content-inner">
+
+<p class="eyebrow">04 · QA automation</p>
+<h1>The QA lane — a test factory built from skills</h1>
+<p class="lede">Testing runs as its own instrumented pipeline, in its own repository, alongside
+the delivery work. The same principle carries over: take everything a machine can decide and
+let a machine decide it. Here that means test <em>authoring</em> itself is an agent chain — inspect
+the app, design cases, bind them to code — gated by a human review in the middle and by
+deterministic checks around the edges.</p>
+
+<div class="note">
+  <span class="note-label">What this is</span>
+  <p>A central QA repository (<code>cpr-dispatcher-test</code>) holds the committed Playwright
+  suites and runs them as a regression gate on the product monorepo. A separate Claude Code
+  plugin (<code>xplorebe-qa-skills</code>) holds the fourteen skills that <em>write</em> those
+  suites. The tests are an output; the reusable asset is the skill chain that produces them.</p>
+</div>
+
+<h2>Two jobs, deliberately kept apart</h2>
+<p>The QA repo does two things, and the split between them is the point: one is automatic and
+cheap, the other is manual and deliberate.</p>
+<div class="tracks">
+  <div class="track-card" style="cursor:default">
+    <span class="tc-idx">Automatic · every PR</span>
+    <h3>Regression gate</h3>
+    <p>A PR or a merge in the product monorepo fires a <code>repository_dispatch</code> per
+    affected target (dispatcher UI, volunteer UI, API). The QA repo runs the <em>already
+    committed</em> suite for that target — smoke on a PR, full regression on a merge. No test
+    generation, no model in the loop.</p>
+  </div>
+  <div class="track-card" style="cursor:default">
+    <span class="tc-idx">Manual · on demand</span>
+    <h3>Test authoring</h3>
+    <p>Generating or refreshing tests is <code>workflow_dispatch</code> only — a person picks a
+    target, a model, an effort level and a spec style, and the skill chain runs and opens a PR
+    for review. Never a side effect of someone pushing code.</p>
+  </div>
+</div>
+<div class="note finding">
+  <span class="note-label">Why the separation</span>
+  <p>Generation is where the cost and the risk live — a model reading the app and writing code.
+  Making it a deliberate, human-started call keeps it out of the hot path, while the
+  committed suites still gate every product change for free. The two never share a trigger.</p>
+</div>
+
+<h2>Two lanes, mirror images of each other</h2>
+<p>Every stage exists twice — once for the browser (<strong>UI lane</strong>) and once for the
+service contract (<strong>API lane</strong>) — with the same shape at each step. The UI lane
+crawls the app to a shared <code>DOM.md</code>; the API lane parses the OpenAPI spec to a shared
+<code>API.md</code>. From there the chain is identical:</p>
+<div class="readout">
+  <div class="r-head">[chain] inspect → design → review → bind → run → heal → trace</div>
+  <span class="pass">  inspect </span>  ui-inspector → DOM.md   ·   api-inspector → API.md<br>
+  <span class="pass">  design  </span>  spec-to-cases → test-cases.md + glossary + traceability<br>
+  <span class="fail">  ▸ HUMAN REVIEW GATE </span>  cases signed off before any code is written<br>
+  <span class="pass">  bind    </span>  test-writer → Playwright code + Page/Service objects + CI<br>
+  <span class="pass">  run     </span>  test-healer → classify drift vs. assertion vs. real bug<br>
+  <span class="pass">  heal    </span>  fix fragility in Page/Service objects; quarantine @flaky<br>
+  <span class="pass">  trace   </span>  traceability-auditor → gh issues vs. @issue-N tags<br>
+  <span class="dim">  design and binding are different jobs with different review gates.</span>
+</div>
+<p>The split between <strong>designing cases</strong> and <strong>binding them to selectors and
+routes</strong> is load-bearing: they are different jobs, so they get different review gates.
+A human reviews the reasoning (the cases) before any effort goes into the mechanics (the code) —
+the expensive rework of wiring the wrong tests is caught before it happens.</p>
+
+<h3>Plain code by default, Gherkin on request</h3>
+<p>Each lane has two output formats. The default is plain Playwright Test
+(<code>describe</code>/<code>test</code>); saying "use Gherkin" opts into Cucumber
+<code>.feature</code> files plus step definitions. The design skills produce the same reviewable
+cases either way — only the binder differs. Selectors and interactions live in Page Objects (UI)
+and Service Objects (API), never inline in a test.</p>
+
+<h2>The fourteen skills</h2>
+<p>Packaged as a single Claude Code plugin, installed once and shared across every project. No
+org or repo names are baked in — each skill takes its target as input.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Stage</th><th>Skill(s)</th><th>Does</th></tr></thead>
+  <tbody>
+    <tr><td>Inspect</td><td class="num">ui-inspector · api-inspector</td><td>Crawl the app / parse the spec into a shared source of truth (<code>DOM.md</code>, <code>API.md</code>); drift mode re-inspects a changed app.</td></tr>
+    <tr><td>Design</td><td class="num">ui/api-spec-to-cases · …-to-gherkin</td><td>ISTQB analysis: specs and GitHub issues → reviewable cases + action glossary + traceability. No code; ends at the review gate.</td></tr>
+    <tr><td>Bind</td><td class="num">ui/api-test-writer(-native)</td><td>Turn approved cases into Playwright code + Page/Service objects + ajv contract checks (API) + CI.</td></tr>
+    <tr><td>Data</td><td class="num">test-data-manager</td><td>Typed factories, boundary/injection fixtures, seed/teardown. Isolated, PII-safe.</td></tr>
+    <tr><td>Run &amp; heal</td><td class="num">test-healer</td><td>Run both suites, classify each failure (drift / assertion / real bug), heal drift, quarantine <code>@flaky</code>. Prime directive: never turn a real bug green.</td></tr>
+    <tr><td>Trace</td><td class="num">traceability-auditor</td><td>Coverage matrix of GitHub issues against <code>@issue-N</code> tags → gap report. Analysis only.</td></tr>
+    <tr><td>Report</td><td class="num">bugs-reporter</td><td>Classify a real bug as technical vs. requirements-origin, trace it to its source story, file an <code>@bug</code> issue in the right repo.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Design decisions worth keeping</h2>
+<ul>
+  <li><strong><code>test.fail()</code> is the marker — nothing beside it.</strong> A case for
+  behaviour the app does not have yet carries <code>test.fail()</code> with the ticket in its
+  reason; its expected red counts as a pass, and the day the defect is fixed the run goes red
+  with "Expected to fail, but passed" — forcing the marker to be removed instead of drifting out
+  of date. There is deliberately no parallel <code>@known-gap</code> tag: a second thing to keep
+  in sync is the half that goes stale, because nothing fails when a tag outlives its gap.</li>
+  <li><strong>The suite cleans up after itself.</strong> The dispatcher app writes to a real,
+  shared backend with no reset. Each test cancels the records it created; a teardown project then
+  deletes every incident carrying one of the suite's title markers — clearing other runs' litter
+  too, which is the point.</li>
+  <li><strong>Git hooks that install themselves.</strong> <code>npm ci</code> points git at
+  <code>.githooks/</code> via the <code>prepare</code> script — no husky, no extra dependency.
+  Pre-commit formats staged files; pre-push mirrors CI's format gate so a green push means a
+  green check.</li>
+  <li><strong>One installed copy of the skills, one owner.</strong> The skills are a plugin, not
+  a checked-in copy and never a personal symlink — a personal-scope copy shadows every other on a
+  name collision, so a stale clone wins silently. (Not hypothetical: a clone four commits behind
+  once served outdated <code>bugs-reporter</code> guidance.) CI has no plugin step, so it stages
+  the skills from the pinned repo instead. The same "one home per fact" discipline as the
+  delivery harness.</li>
+</ul>
+
+<h2>QA findings</h2>
+<div class="note finding">
+  <span class="note-label">What held up</span>
+  <p><strong>Test authoring splits cleanly into a reasoning step and a mechanics step.</strong>
+  Gating the designed cases with a human before a line of test code is written is the same move
+  as gating each delivery slice: it keeps the expensive rework — binding the wrong tests — from
+  ever starting.</p>
+</div>
+<ul>
+  <li><strong>The biggest quality signal was simply whether the model ran its own suite.</strong>
+  No static metric predicted it — see the second model comparison below.</li>
+  <li><strong>Markers must be self-invalidating.</strong> A convention that can silently outlive
+  what it described (a stale gap tag) is a convention that will. Prefer the form that goes red on
+  its own when it drifts.</li>
+  <li><strong>Automatic and deliberate work want different triggers.</strong> The cheap,
+  model-free regression gate runs on every change; the expensive, model-driven authoring runs
+  only when a person asks.</li>
+</ul>
+
+<h2>The model comparison this repo produced</h2>
+<p>The QA repo hosted a second controlled model experiment — three tiers generating the same UI
+suite from byte-identical inputs. Its sharpest finding (the cheapest tier wrote a suite it never
+ran, and it was dead on arrival) is summarized on the
+<a href="experiment.html">experiment reference</a> as <em>run 2</em>.</p>
+
+<div class="meta-foot">Repos: cpr-dispatcher-test (suites &amp; gate) · xplorebe-qa-skills (the skill chain)</div>
+
+<div class="pager">
+  <a href="experiment.html"><span class="p-dir">← Previous</span>Experiment reference</a>
+  <a href="index.html" style="text-align:right"><span class="p-dir">Back to →</span>Overview</a>
+</div>
+
+    </div>
+  </main>
+</div>
+<script>
+  var b=document.getElementById('menuBtn'),s=document.getElementById('sidebar');
+  if(b){b.addEventListener('click',function(){s.classList.toggle('open');});}
+</script>
+</body>
+</html>

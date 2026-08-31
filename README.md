@@ -14,7 +14,8 @@ this).
 index.html        Overview — what this is, timeline, the reset, the numbers
 technical.html    Technical track — the harness, sensors, CI review, determinism
 business.html     Business & organization track — team, output, cost, risks
-experiment.html   Experiment reference — the model & harness comparison, summarized
+experiment.html   Experiment reference — the two model & harness comparisons, summarized
+qa.html           QA automation — the UI/API test lanes, the skill chain, the regression gate
 assets/style.css  Shared stylesheet
 .nojekyll         Tells GitHub Pages to serve the files as-is
 ```
@@ -52,7 +53,7 @@ python3 -m http.server 8000   # then open http://localhost:8000
 ## Editing
 
 - Content is in the four `.html` files; styling is all in `assets/style.css`.
-- The navigation block is repeated in each page's `<aside class="sidebar">` — four
+- The navigation block is repeated in each page's `<aside class="sidebar">` — five
   links, kept in sync by hand. If the wiki grows enough that this duplication starts
   to hurt, that is the signal to move to a templated setup (e.g. Jekyll, which
   GitHub Pages builds natively) — not before. Zero premature complexity.
