@@ -41,13 +41,14 @@ a sales case.</p>
 <p>The greenfield restart adopted a deliberately light structure, designed around the
 retrospective's lessons rather than around a large-project template.</p>
 <ul>
-  <li><strong>One owner per repo, rotating each sprint.</strong> The owner integrates,
-  makes local decisions, and documents their way of working. Rotation means each person
-  passes through every repo and gives and receives feedback on the others' methods.</li>
-  <li><strong>A contract session on day 1 of every sprint.</strong> Before any work is
-  split, the shared contract (endpoints, shapes, events, error codes) is agreed and
-  pinned in a shared artifact — the direct mitigation of "agree the contract before
-  parallelizing."</li>
+  <li><strong>Effort follows expertise, not a fixed owner.</strong> Everyone develops
+  features end-to-end across the repos, but we're stronger in some technologies than others,
+  so we lean into the ones we know best — especially for review and for setting the
+  conventions and rules — while still giving and receiving feedback on the rest.</li>
+  <li><strong>Agree the contract before splitting the work.</strong> There is no fixed sprint
+  ceremony; we develop as we go and meet once there's a plan written down. Before any work is
+  split, the shared contract (endpoints, shapes, events, error codes) is agreed and pinned in
+  a shared artifact — the direct mitigation of "agree the contract before parallelizing."</li>
   <li><strong>Each repo keeps its own harness.</strong> Structural changes to shared
   pieces are agreed by everyone; touching them mid-sprint without warning is out, because
   it destabilizes others' work.</li>
@@ -61,7 +62,7 @@ retrospective's lessons rather than around a large-project template.</p>
 the method, not the headcount, was doing the work.</p>
 <ul class="timeline">
   <li>
-    <span class="t-date">Week 1 — two people, fully paired</span>
+    <span class="t-date">Week 1 — the team, fully paired</span>
     <div class="t-body">Planning, implementation, and review done together. Slower by
     design, but everything was agreed and no rework came from a misunderstanding between
     the pair. Established that the process is resumable by a different person.</div>
@@ -100,7 +101,9 @@ where an API key would be issued, so there was <strong>no per-run or per-week sp
 at</strong>. Every cost decision in week 2 — one review pass instead of two, the stronger
 model instead of the cheaper one — was made without the number.</p>
 <p>In week 3, because it was one developer on one machine, usage could be read straight from
-the sessions — the full cost of building the app that week, not a sample.</p>
+that machine's sessions — the full cost of building the app that week, not a sample. The
+figures below are what that single machine reported; the complete, authoritative totals for
+the whole team could be pulled from the Anthropic console rather than read off one machine.</p>
 <div class="tbl-wrap">
 <table>
   <thead><tr><th>Week 3 measure</th><th>Value</th></tr></thead>
@@ -129,10 +132,6 @@ stage, because it needed more attempts and more human re-checking to reach the s
 
 <h2>Risks we can see</h2>
 <ul>
-  <li><strong>Single-person concentration.</strong> The week-3 output and its main risk are
-  the same fact: all application work ran through one developer. High output, but if that
-  person is unavailable, the work stops. The mitigation is that the plan lives as a tracker
-  issue anyone could pick up cold.</li>
   <li><strong>Expertise gaps don't disappear.</strong> Nobody on the week-1 pair had done an
   AWS deployment before; that work still got produced. If you don't want to trust everything
   to the AI, you still have to learn the subject, or wrong things can pass unseen.</li>
