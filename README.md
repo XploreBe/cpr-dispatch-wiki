@@ -14,14 +14,15 @@ this).
 index.html        Overview — what this is, timeline, the reset, the numbers
 technical.html    Technical track — the harness, sensors, CI review, determinism
 business.html     Business & organization track — team, output, cost, risks
-experiment.html   Experiment reference — the two model & harness comparisons, summarized
+experiment.html   Experiment reference — the register of controlled experiments
 qa.html           QA automation — the UI/API test lanes, the skill chain, the regression gate
 assets/style.css  Shared stylesheet
 .nojekyll         Tells GitHub Pages to serve the files as-is
 ```
 
 Two tracks (technical, business) stand alone and share the overview. The experiment
-reference is a summary card; the full deep-dive documents live outside this repo.
+reference is a register: one entry per controlled experiment, appended as runs finish,
+with the full deep-dive documents living outside this repo.
 
 ## Publish on GitHub Pages
 
@@ -52,7 +53,7 @@ python3 -m http.server 8000   # then open http://localhost:8000
 
 ## Editing
 
-- Content is in the four `.html` files; styling is all in `assets/style.css`.
+- Content is in the five `.html` files; styling is all in `assets/style.css`.
 - The navigation block is repeated in each page's `<aside class="sidebar">` — five
   links, kept in sync by hand. If the wiki grows enough that this duplication starts
   to hurt, that is the signal to move to a templated setup (e.g. Jekyll, which
@@ -63,5 +64,6 @@ python3 -m http.server 8000   # then open http://localhost:8000
 - Neutral, descriptive tone: a record and its findings, not a pitch.
 - Cost and output figures are the curated numbers from the weekly reviews; where a
   figure is an estimate, the page says so.
-- The experiment card deliberately omits derivations and caveats that live in the
-  full documents (`model-and-harness-comparison.md`, its presentation script).
+- Experiment entries deliberately omit derivations and caveats that live in the full
+  documents (`model-and-harness-comparison.md`, its presentation script). An entry for a
+  run still in flight says so and carries no result.

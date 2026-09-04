@@ -31,11 +31,43 @@
     <div class="content-inner">
 
 <p class="eyebrow">03 · Experiment reference</p>
-<h1>Model &amp; harness comparison — summary card</h1>
-<p class="lede">A controlled experiment from an earlier phase asked a question with a real
-budget implication: can a cheaper model helped by automated quality gates match a stronger
-model with no gates — and cost less? This page is the short version; both tracks link here.
-The full deep-dive lives in the project's own documents.</p>
+<h1>Experiment reference</h1>
+<p class="lede">The register of controlled experiments run on this project. Each entry states the
+question, the setup, and what the run actually produced — kept short enough to read in one sitting,
+with the deep-dive documents named where they exist. Both tracks link here; entries are appended as
+runs finish, and an entry that is still running says so instead of implying a result.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>#</th><th>Experiment</th><th>Asked</th><th>State</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="num">01</td>
+      <td>Model &amp; harness comparison</td>
+      <td>Can a cheaper model plus quality gates match a stronger model without them?</td>
+      <td class="num"><span class="chip pass">concluded</span></td>
+    </tr>
+    <tr>
+      <td class="num">02</td>
+      <td>Generating a whole test suite (run 2)</td>
+      <td>Does the same tier answer hold when the deliverable is a test suite?</td>
+      <td class="num"><span class="chip pass">concluded</span></td>
+    </tr>
+    <tr>
+      <td class="num">03</td>
+      <td>Condensing the documentation layer</td>
+      <td>Does the documentation this harness produces need to be this big?</td>
+      <td class="num"><span class="chip warn">in progress</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>01 · Model &amp; harness comparison</h2>
+<p>A controlled experiment from an earlier phase asked a question with a real budget implication:
+can a cheaper model helped by automated quality gates match a stronger model with no gates — and
+cost less? This entry is the short version. The full deep-dive lives in the project's own
+documents.</p>
 
 <div class="note">
   <span class="note-label">Scope &amp; caveat</span>
@@ -46,7 +78,7 @@ The full deep-dive lives in the project's own documents.</p>
   "for this use case, at this stage."</p>
 </div>
 
-<h2>The setup</h2>
+<h3>The setup</h3>
 <p>One representative feature — incident CRUD — was built several ways from an identical
 starting point, with identical after-the-fact quality checks on every arm. The variables:
 which model plans, which model implements, and whether the deterministic sensors run
@@ -65,7 +97,7 @@ inside the build loop or only afterward.</p>
 sensors pass. 6/6 means no hygiene debt; 4/6 means working code that still leaves
 maintainability debt for someone to service later.</p>
 
-<h2>The headlines</h2>
+<h3>The headlines</h3>
 <ul>
   <li><strong>The cheap tier was not cheaper.</strong> The all-Haiku arm (B2) was the most
   expensive implementation of the three — it needed more attempts, redo cycles, and
@@ -96,7 +128,30 @@ maintainability debt for someone to service later.</p>
   matures and enough conventions can be encoded to make the cheap tier safe.</p>
 </div>
 
-<h2>A second comparison — generating a whole test suite (run 2)</h2>
+<h3>The recommendation it produced</h3>
+<ul>
+  <li><strong>Plan with the strong model</strong> where the design is genuinely open; use a
+  cheaper planner where the contract is already pinned (don't pay for reasoning on
+  transcription-grade CRUD).</li>
+  <li><strong>Implement with the mid tier for now</strong>, and set the cheapest tier aside
+  for this kind of work until conventions mature.</li>
+  <li><strong>Keep investing in the harness</strong> — the cheap, deterministic,
+  model-agnostic layer that actually moved quality.</li>
+  <li><strong>Keep the strong model on structure-defining slices</strong> — the one routing
+  rule that clearly paid.</li>
+</ul>
+
+<h3>Where the full detail lives</h3>
+<p>This entry intentionally omits the arm-by-arm cost derivations, the tooling-bug
+confound that inflated one arm, and the full cross-arm analysis. Those live in the
+project's deep-dive documents, kept outside this wiki:</p>
+<ul>
+  <li><code>model-and-harness-comparison.md</code> — the full report and every caveat.</li>
+  <li><code>model-comparison-presentation-script.md</code> — the slide-by-slide walkthrough
+  for a management audience.</li>
+</ul>
+
+<h2>02 · Generating a whole test suite (run 2)</h2>
 <p>A later, independent experiment in the QA repo asked the same tier question of a different
 task: not building a feature, but <strong>generating a Playwright UI suite</strong>. Three models
 wrote a suite for the Dispatcher console from byte-identical inputs — the same <code>DOM.md</code>,
@@ -139,28 +194,95 @@ the only variable.</p>
 <p style="font-size:14px;color:var(--muted)">This comparison and the QA pipeline that hosted it
 are detailed on the <a href="qa.html">QA automation</a> page.</p>
 
-<h2>The recommendation it produced</h2>
+<h2>03 · Condensing the documentation layer</h2>
+<p>The first two entries measured what the harness produces as code. This one measures what it
+produces as prose. In one month the repository accumulated 20 architecture decision records and
+roughly 5,500 lines of comment over roughly 33,000 lines of code. The team's judgement was that
+this is too much. The question is whether that volume is the harness working as intended, or a
+rule shape that manufactures documentation nobody reads — and what it costs to take it back out.</p>
+
+<div class="note">
+  <span class="note-label">Status</span>
+  <p><span class="chip warn">in progress</span> &nbsp;The intervention is being delivered as a
+  stack of eight slices; nothing is concluded yet. Unlike the two entries above, this one carries
+  no result — the numbers below are the baseline it started from, not an outcome. The entry is
+  filled in when the stack has merged and both apps have been walked.</p>
+</div>
+
+<h3>The baseline</h3>
+<p>Measured across the repository one month after the greenfield restart, on the current
+stack (backend in Java / Spring).</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Surface</th><th>Baseline</th></tr></thead>
+  <tbody>
+    <tr><td>Architecture decision records</td><td>20 documents · 1,858 lines · ~93 lines each</td></tr>
+    <tr><td><code>backend/</code></td><td>~3,102 comment lines over ~14,500 — 21%</td></tr>
+    <tr><td><code>dispatcher-app/</code></td><td>13% comment lines</td></tr>
+    <tr><td><code>infra/</code></td><td>25% comment lines — the densest area</td></tr>
+    <tr><td><code>package-info.java</code></td><td>70 files · 456 comment lines, every one written by mandate</td></tr>
+    <tr><td>Whole repository</td><td>~5,500 comment lines over ~33,000 lines of code</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>The diagnosis</h3>
+<p>The cause is not a missing rule. It is the shape of the rules already in place — each one, read
+by an agent that wants to comply, reads as an instruction to write:</p>
 <ul>
-  <li><strong>Plan with the strong model</strong> where the design is genuinely open; use a
-  cheaper planner where the contract is already pinned (don't pay for reasoning on
-  transcription-grade CRUD).</li>
-  <li><strong>Implement with the mid tier for now</strong>, and set the cheapest tier aside
-  for this kind of work until conventions mature.</li>
-  <li><strong>Keep investing in the harness</strong> — the cheap, deterministic,
-  model-agnostic layer that actually moved quality.</li>
-  <li><strong>Keep the strong model on structure-defining slices</strong> — the one routing
-  rule that clearly paid.</li>
+  <li><strong>A rule that enumerates admitted genres is a licence.</strong> The comment rule named
+  four legitimate genres; naming them made a comment that fits one feel earned rather than
+  justified.</li>
+  <li><strong>The reversal test admits almost everything.</strong> "Would a future reader need to
+  know why this was chosen?" passes any deliberate choice, and every choice in a plan is
+  deliberate.</li>
+  <li><strong>An empty box in a template gets filled.</strong> The tech-plan template's Key
+  decisions table carried an ADR column — a structural invitation to write one ADR per decision,
+  which is the mechanism behind the count.</li>
+  <li><strong>A mandate produces volume, not value.</strong> The backend rule required a
+  why-javadoc in every <code>package-info.java</code>: 456 lines that existed because they were
+  required, not because a reader was stuck.</li>
 </ul>
 
-<h2>Where the full detail lives</h2>
-<p>This card intentionally omits the arm-by-arm cost derivations, the tooling-bug
-confound that inflated one arm, and the full cross-arm analysis. Those live in the
-project's deep-dive documents, kept outside this wiki:</p>
+<h3>The intervention</h3>
 <ul>
-  <li><code>model-and-harness-comparison.md</code> — the full report and every caveat.</li>
-  <li><code>model-comparison-presentation-script.md</code> — the slide-by-slide walkthrough
-  for a management audience.</li>
+  <li>Both rules collapse to <strong>one sentence each</strong> in <code>CLAUDE.md</code>, and the
+  two rule files are deleted — a single negative criterion in place of an enumeration of admitted
+  genres.</li>
+  <li>The ADR column comes out of the tech-plan template, and the why-javadoc mandate out of the
+  backend rule.</li>
+  <li><strong>Five ADRs are written from scratch to replace the 20</strong>, one page at most each,
+  absorbing only the decisions that still bind. Numbering restarts; nothing external cites the old
+  series.</li>
+  <li>Each area is then swept in <strong>its own pull request, largest first</strong> —
+  <code>backend/</code>, <code>dispatcher-app/</code>, <code>volunteer-app/</code>,
+  <code>infra/</code> — so a red build localises to one area.</li>
+  <li>Three carve-outs survive on purpose: the backend's port javadoc (the specification both
+  adapters are tested against), the architecture test's per-exception reasons (the entire value of
+  that check), and the OpenAPI contract, left for the next session that opens it rather than
+  granted a written exception.</li>
 </ul>
+
+<h3>What it reads out</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Measure</th><th>How it is read</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Volume removed</td><td>Comment and ADR line counts, before against after</td><td class="num"><span class="chip warn">pending</span></td></tr>
+    <tr><td>Deterministic gates</td><td><code>mvn verify</code> and each frontend's build, test and lint, green at every layer of the stack</td><td class="num"><span class="chip warn">pending</span></td></tr>
+    <tr><td>Behaviour unchanged</td><td>Both apps run against the backend, dispatcher and volunteer flows walked</td><td class="num"><span class="chip warn">pending</span></td></tr>
+    <tr><td>Comprehension held</td><td>Whether a later session opening a swept file still has what it needs</td><td class="num"><span class="chip warn">pending</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <span class="note-label">What would falsify it</span>
+  <p>A swept comment that has to come back, or an agent that misreads code the deleted comment used
+  to explain. The first three measures are deterministic and settle within the stack; the fourth is
+  the one that matters and only shows up over the following weeks, which is why this entry stays
+  open after the pull requests merge.</p>
+</div>
 
 <div class="pager">
   <a href="business.html"><span class="p-dir">← Previous</span>Business &amp; organization</a>
