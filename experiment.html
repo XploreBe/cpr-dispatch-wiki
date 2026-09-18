@@ -321,19 +321,24 @@ incident — was built three times from the byte-identical commit on <code>main<
 repository, same one-line rule, model id and author the only variable.</p>
 <div class="tbl-wrap">
 <table>
-  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th></tr></thead>
+  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th><th>gpt-5.6-luna</th></tr></thead>
   <tbody>
-    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td></tr>
-    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td></tr>
-    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td></tr>
-    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td></tr>
-    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td></tr>
-    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td></tr>
-    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td></tr>
-    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td></tr>
+    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td><td class="num">8 files · +189</td></tr>
+    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td><td class="num">169</td></tr>
+    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>0%</strong></td></tr>
+    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td><td class="num">0 of 8</td></tr>
+    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td><td>none — no contract change</td></tr>
   </tbody>
 </table>
 </div>
+<p><strong>This run's delivery measures.</strong> The <code>gpt-5.6-luna</code> implementation took
+<strong>8m 37s</strong> from the recorded task start through the completed verification and was
+delivered on <code>experiment/csv-export-gpt-5.6-luna-high</code>. The configured provider,
+<code>opencode-go/gpt-5.6-luna</code>, exposes neither token usage for this session nor a public API
+price, so its dollar cost is <strong>not determinable</strong> rather than estimated.</p>
 <ul>
   <li><strong>opus comments roughly 4.6× more densely than sonnet</strong> — 8.3% against 1.8% of
   added lines, 10 comment blocks against 2, on the same feature under the same rule. It is also the
