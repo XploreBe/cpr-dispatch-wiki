@@ -57,7 +57,7 @@ runs finish, and an entry that is still running says so instead of implying a re
       <td class="num">03</td>
       <td>Condensing the documentation layer</td>
       <td>Does the documentation this harness produces need to be this big?</td>
-      <td class="num"><span class="chip warn">in progress</span></td>
+      <td class="num"><span class="chip warn">first readout</span></td>
     </tr>
   </tbody>
 </table>
@@ -203,10 +203,11 @@ rule shape that manufactures documentation nobody reads — and what it costs to
 
 <div class="note">
   <span class="note-label">Status</span>
-  <p><span class="chip warn">in progress</span> &nbsp;The intervention is being delivered as a
-  stack of eight slices; nothing is concluded yet. Unlike the two entries above, this one carries
-  no result — the numbers below are the baseline it started from, not an outcome. The entry is
-  filled in when the stack has merged and both apps have been walked.</p>
+  <p><span class="chip warn">first readout</span> &nbsp;The intervention merged between 4 and
+  7 Sep 2026 (#321, #323–#332), so the volume measures below now carry real numbers instead of the
+  baseline alone. The entry stays open on the one measure that matters — whether comprehension
+  held — and the first two weeks of delivery after it have already produced a signal worth
+  recording: the comments are growing back.</p>
 </div>
 
 <h3>The baseline</h3>
@@ -268,20 +269,99 @@ by an agent that wants to comply, reads as an instruction to write:</p>
 <table>
   <thead><tr><th>Measure</th><th>How it is read</th><th>Result</th></tr></thead>
   <tbody>
-    <tr><td>Volume removed</td><td>Comment and ADR line counts, before against after</td><td class="num"><span class="chip warn">pending</span></td></tr>
-    <tr><td>Deterministic gates</td><td><code>mvn verify</code> and each frontend's build, test and lint, green at every layer of the stack</td><td class="num"><span class="chip warn">pending</span></td></tr>
-    <tr><td>Behaviour unchanged</td><td>Both apps run against the backend, dispatcher and volunteer flows walked</td><td class="num"><span class="chip warn">pending</span></td></tr>
-    <tr><td>Comprehension held</td><td>Whether a later session opening a swept file still has what it needs</td><td class="num"><span class="chip warn">pending</span></td></tr>
+    <tr><td>Volume removed</td><td>Comment and ADR line counts, before against after</td><td class="num"><span class="chip pass">−80.5% comments · −80% ADR lines</span></td></tr>
+    <tr><td>Deterministic gates</td><td><code>mvn verify</code> and each frontend's build, test and lint, green at every layer of the stack</td><td class="num"><span class="chip pass">green</span></td></tr>
+    <tr><td>Behaviour unchanged</td><td>Both apps run against the backend, dispatcher and volunteer flows walked</td><td class="num"><span class="chip pass">green at merge</span></td></tr>
+    <tr><td>Comprehension held</td><td>Whether a later session opening a swept file still has what it needs</td><td class="num"><span class="chip warn">open</span></td></tr>
+    <tr><td>The volume stays off</td><td>Comment density of the code written after the sweep, against the density it left</td><td class="num"><span class="chip fail">grew back 91.8%</span></td></tr>
   </tbody>
 </table>
 </div>
 
+
+<h3>The readout</h3>
+<p>Re-measured on one footing at three points in history — every hand-written Java and TypeScript
+file under <code>backend/src</code> and both apps' <code>src</code>, blank lines and the generated
+<code>schema.d.ts</code> excluded — so the three rows are comparable to each other rather than to
+the baseline table above, which was counted on a wider footing. <code>infra/</code> is counted
+separately below, with its own file types.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Codebase</th><th>Source lines</th><th>Comment lines</th><th>Density</th><th>Files carrying a comment</th><th>ADRs</th></tr></thead>
+  <tbody>
+    <tr><td>Before the rule · 4 Sep</td><td class="num">25,216</td><td class="num">4,868</td><td class="num">19.3%</td><td class="num">333 of 339</td><td class="num">20 · 1,858 lines</td></tr>
+    <tr><td>After the sweep · 7 Sep</td><td class="num">21,054</td><td class="num">949</td><td class="num">4.5%</td><td class="num">113 of 269</td><td class="num">5 · 364 lines</td></tr>
+    <tr><td>Today · 11 Sep, 50 commits later</td><td class="num">27,099</td><td class="num">1,820</td><td class="num">6.7%</td><td class="num">169 of 317</td><td class="num">6 · 495 lines</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:14px;color:var(--muted)">Per area, before against after the sweep against today:
+<code>backend/src</code> 23.9% → 4.0% → 8.2%; <code>dispatcher-app/src</code> 15.2% → 5.8% → 5.5%;
+<code>volunteer-app/src</code> 12.7% → 2.7% → 3.7%; <code>infra/</code> 26.4% → 14.8% → 19.2%.</p>
+<ul>
+  <li><strong>The intervention worked, and by a wide margin.</strong> 4,868 comment lines became
+  949 — <strong>−80.5%</strong>, density 19.3% → 4.5% — and the twenty ADRs became five, 1,858 lines
+  → 364, <strong>−80%</strong>. Two thirds of the files stopped carrying any comment at all.</li>
+  <li><strong>It did not hold.</strong> In the 50 commits of delivery that followed, comments grew
+  back <strong>+91.8%</strong> (949 → 1,820 lines), taking density from 4.5% to 6.7% — +2.2pp, a
+  <strong>49% relative rise</strong> in four days.</li>
+  <li><strong>Comments are growing ~3.2× faster than the code.</strong> Source grew 28.7% over the
+  same window against the comments' 91.8%, so <strong>14.4% of every net line added since the sweep
+  has been a comment</strong> — three times the density the sweep left behind. At this rate the
+  pre-rule 19.3% returns in roughly two months of delivery at the same pace.</li>
+  <li><strong>The regrowth is not uniform.</strong> The backend doubled (4.0% → 8.2%) and
+  <code>infra/</code> climbed back to 19.2%, while the dispatcher app held flat (5.8% → 5.5%) — the
+  areas that see the most agent-written code are the ones that drift.</li>
+</ul>
+
+<h3>The follow-up: what each model writes now</h3>
+<p>To separate the rule from the author, one small self-contained feature — a CSV export of every
+incident — was built three times from the byte-identical commit on <code>main</code>: once by
+<code>sonnet</code>, once by <code>opus</code>, once by a human developer as the baseline. Same
+repository, same one-line rule, model id and author the only variable.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th></tr></thead>
+  <tbody>
+    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td></tr>
+    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td></tr>
+    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td></tr>
+    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td></tr>
+    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td></tr>
+    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td></tr>
+    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td></tr>
+    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><strong>opus comments roughly 4.6× more densely than sonnet</strong> — 8.3% against 1.8% of
+  added lines, 10 comment blocks against 2, on the same feature under the same rule. It is also the
+  density driving the 8.2% the backend has drifted back to.</li>
+  <li><strong>The restraint rule holds far better for sonnet.</strong> Both of its comments are the
+  cases the rule is written for: the ordering guarantee a port method makes to its callers, and the
+  reason behind the RFC 4180 escaping. It left the tests uncommented entirely.</li>
+  <li><strong>opus overshoots mainly in the tests.</strong> 10 of its 27 comment lines document test
+  methods whose names and bodies already say the same thing. Its production comments are more
+  defensible — one explains that Spring matches a literal path segment ahead of a template one,
+  which the code genuinely cannot show.</li>
+  <li><strong>The human wrote no code comment at all</strong>, and expressed the endpoint's intent
+  only where this repository does want prose: the contract description — one line, where opus wrote
+  about six per endpoint.</li>
+  <li><strong>A written rule bends the volume, it does not set it.</strong> The same one-line
+  instruction produced 0%, 1.8% and 8.3% across three authors. On comment discipline the author,
+  not the rule, is the dominant variable — which is the same shape entry 01 found for quality: what
+  held was the gate in the loop, not the prose.</li>
+</ul>
+
 <div class="note">
   <span class="note-label">What would falsify it</span>
   <p>A swept comment that has to come back, or an agent that misreads code the deleted comment used
-  to explain. The first three measures are deterministic and settle within the stack; the fourth is
+  to explain. The first three measures are deterministic and settled within the stack; the fourth is
   the one that matters and only shows up over the following weeks, which is why this entry stays
-  open after the pull requests merge.</p>
+  open after the pull requests merged. The fifth has already answered in the other direction: the
+  volume is coming back, so the next thing this entry has to test is a sensor — a density check in
+  the build loop — rather than another sweep.</p>
 </div>
 
 <div class="pager">
