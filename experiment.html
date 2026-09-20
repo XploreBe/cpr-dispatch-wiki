@@ -321,16 +321,16 @@ incident — was built three times from the byte-identical commit on <code>main<
 repository, same one-line rule, model id and author the only variable.</p>
 <div class="tbl-wrap">
 <table>
-  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th><th>gpt-5.6-luna</th><th>qwen3.8-flash</th></tr></thead>
+  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th><th>gpt-5.6-luna</th><th>qwen3.8-flash</th><th>kimi-k3</th></tr></thead>
   <tbody>
-    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td><td class="num">8 files · +189</td><td class="num">14 files · +477</td></tr>
-    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td><td class="num">169</td><td class="num">360</td></tr>
-    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td><td class="num">0</td><td class="num">13</td></tr>
-    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>3.6%</strong></td></tr>
-    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td><td class="num">0</td><td class="num">3</td></tr>
-    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td><td class="num">0 of 8</td><td class="num">3 of 14</td></tr>
-    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td><td class="num">0</td><td class="num">2 lines</td></tr>
-    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td><td>none — no contract change</td><td class="num">10 lines</td></tr>
+    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td><td class="num">8 files · +189</td><td class="num">14 files · +477</td><td class="num">12 files · +435</td></tr>
+    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td><td class="num">169</td><td class="num">360</td><td class="num">399</td></tr>
+    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td><td class="num">0</td><td class="num">13</td><td class="num">3</td></tr>
+    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>3.6%</strong></td><td class="num"><strong>0.8%</strong></td></tr>
+    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td><td class="num">0</td><td class="num">3</td><td class="num">2</td></tr>
+    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td><td class="num">0 of 8</td><td class="num">3 of 14</td><td class="num">2 of 12</td></tr>
+    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td><td class="num">0</td><td class="num">2 lines</td><td class="num">0</td></tr>
+    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td><td>none — no contract change</td><td class="num">10 lines</td><td class="num">7 lines</td></tr>
   </tbody>
 </table>
 </div>
@@ -347,6 +347,14 @@ reasoning tokens.</p>
 <strong>$0.08598</strong> across the implementing session and its one explore subagent
 (<code>opencode-go/qwen3.8-flash</code>, medium variant): 366 uncached input tokens, 2,843,529
 cached-read tokens, 117,380 cached-write tokens, and 36,070 output tokens.</p>
+<p><strong>kimi-k3 run.</strong> The <code>kimi-k3</code> implementation took
+<strong>18m 7s</strong> from the recorded task start through the completed verification
+(<code>mvn clean verify</code> green — 684 tests — both apps' contract checks and builds, and a live
+smoke test of the endpoint) and was delivered on
+<code>experiment/csv-export-kimi-k3-high</code>. OpenCode's session record reports
+<strong>$2.0589678</strong> for <code>opencode-go/kimi-k3</code>: 181,072 uncached input tokens,
+3,488,106 cached-read tokens, 0 cached-write tokens, 15,903 output tokens, and 15,385 reasoning
+tokens.</p>
 <ul>
   <li><strong>opus comments roughly 4.6× more densely than sonnet</strong> — 8.3% against 1.8% of
   added lines, 10 comment blocks against 2, on the same feature under the same rule. It is also the
