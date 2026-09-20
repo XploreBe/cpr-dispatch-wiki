@@ -321,16 +321,16 @@ incident — was built three times from the byte-identical commit on <code>main<
 repository, same one-line rule, model id and author the only variable.</p>
 <div class="tbl-wrap">
 <table>
-  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th><th>gpt-5.6-luna</th></tr></thead>
+  <thead><tr><th>Measure</th><th>sonnet</th><th>opus</th><th>human</th><th>gpt-5.6-luna</th><th>qwen3.8-flash</th></tr></thead>
   <tbody>
-    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td><td class="num">8 files · +189</td></tr>
-    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td><td class="num">169</td></tr>
-    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td><td class="num">0</td></tr>
-    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>0%</strong></td></tr>
-    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td><td class="num">0</td></tr>
-    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td><td class="num">0 of 8</td></tr>
-    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td><td class="num">0</td></tr>
-    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td><td>none — no contract change</td></tr>
+    <tr><td>Diff size</td><td class="num">8 files · +193</td><td class="num">13 files · +458</td><td class="num">12 files · +288</td><td class="num">8 files · +189</td><td class="num">14 files · +477</td></tr>
+    <tr><td>Added lines (non-blank)</td><td class="num">169</td><td class="num">326</td><td class="num">182</td><td class="num">169</td><td class="num">360</td></tr>
+    <tr><td>Hand-written comment lines</td><td class="num">3</td><td class="num">27</td><td class="num">0</td><td class="num">0</td><td class="num">13</td></tr>
+    <tr><td><strong>Comment density</strong></td><td class="num"><strong>1.8%</strong></td><td class="num"><strong>8.3%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>0%</strong></td><td class="num"><strong>3.6%</strong></td></tr>
+    <tr><td>Comment blocks</td><td class="num">2</td><td class="num">10</td><td class="num">0</td><td class="num">0</td><td class="num">3</td></tr>
+    <tr><td>Files carrying a comment</td><td class="num">2 of 8</td><td class="num">6 of 13</td><td class="num">0 of 12</td><td class="num">0 of 8</td><td class="num">3 of 14</td></tr>
+    <tr><td>Of which in test code</td><td class="num">0</td><td class="num">10 lines</td><td class="num">0</td><td class="num">0</td><td class="num">2 lines</td></tr>
+    <tr><td>Contract descriptions (generated into both apps)</td><td>none — no contract change</td><td class="num">12 lines</td><td class="num">10 lines</td><td>none — no contract change</td><td class="num">10 lines</td></tr>
   </tbody>
 </table>
 </div>
@@ -340,6 +340,13 @@ delivered on <code>experiment/csv-export-gpt-5.6-luna-medium</code>. OpenCode's 
 <strong>$0.12035123</strong> for <code>opencode-go/gpt-5.6-luna</code> (medium variant): 126 uncached input
 tokens, 3,511,224 cached-read tokens, 133,619 cached-write tokens, 10,165 output tokens, and 3,749
 reasoning tokens.</p>
+<p><strong>qwen3.8-flash run.</strong> The <code>qwen3.8-flash</code> implementation took
+<strong>19m 40s</strong> from the recorded task start through the completed <code>mvn verify</code>
+(branch pushed 20m 36s after the start) and was delivered on
+<code>experiment/csv-export-qwen3.8-flash-medium</code>. OpenCode's session record reports
+<strong>$0.08598</strong> across the implementing session and its one explore subagent
+(<code>opencode-go/qwen3.8-flash</code>, medium variant): 366 uncached input tokens, 2,843,529
+cached-read tokens, 117,380 cached-write tokens, and 36,070 output tokens.</p>
 <ul>
   <li><strong>opus comments roughly 4.6× more densely than sonnet</strong> — 8.3% against 1.8% of
   added lines, 10 comment blocks against 2, on the same feature under the same rule. It is also the
@@ -354,6 +361,12 @@ reasoning tokens.</p>
   <li><strong>The human wrote no code comment at all</strong>, and expressed the endpoint's intent
   only where this repository does want prose: the contract description — one line, where opus wrote
   about six per endpoint.</li>
+  <li><strong>qwen3.8-flash sits between the two machine arms</strong> — 3.6%, 3 blocks. Its two
+  production comments are exactly the genres the rule carves out (the ordering guarantee on the new
+  port method, the ADR-0001 reason the location column leaves as a lat/long pair); the third pair of
+  lines in the test explains an environment-dependent assertion. It is also the only arm that
+  touched the contract and both generated schemas, matching the human's footprint rather than
+  sonnet's and gpt-5.6-luna's.</li>
   <li><strong>A written rule bends the volume, it does not set it.</strong> The same one-line
   instruction produced 0%, 1.8% and 8.3% across three authors. On comment discipline the author,
   not the rule, is the dominant variable — which is the same shape entry 01 found for quality: what
