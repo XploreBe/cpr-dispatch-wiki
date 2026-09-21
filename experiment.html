@@ -59,6 +59,12 @@ runs finish, and an entry that is still running says so instead of implying a re
       <td>Does the documentation this harness produces need to be this big?</td>
       <td class="num"><span class="chip warn">first readout</span></td>
     </tr>
+    <tr>
+      <td class="num">04</td>
+      <td>A frontend feature, four authors</td>
+      <td>Does an agent's speed advantage on a frontend feature cost anything in code quality?</td>
+      <td class="num"><span class="chip pass">concluded</span></td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -390,6 +396,62 @@ tokens.</p>
   volume is coming back, so the next thing this entry has to test is a sensor — a density check in
   the build loop — rather than another sweep.</p>
 </div>
+
+<h2>04 · A frontend feature, four authors</h2>
+<p>The register's earlier runs held the task fixed and varied the model id. This one varies the
+author across both kinds. One frontend feature — a theme toggle, the switching logic behind it,
+a dark palette across both apps, and the choice persisted to local storage — was built four
+times from the same base commit: once by <code>opus-5</code>, once by <code>sonnet-5</code>,
+once by a senior React developer, and once by a developer coming from Angular with almost no
+React. Scope was fixed in advance and author was the only variable. Every arm was verified by
+hand in both apps before its clock stopped.</p>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>Measure</th><th>opus-5</th><th>sonnet-5</th><th>senior React dev</th><th>dev new to React</th></tr></thead>
+  <tbody>
+    <tr><td>Wall clock</td><td class="num">15m</td><td class="num">19m</td><td class="num">35m</td><td class="num">2h 25m</td></tr>
+    <tr><td>Against the baseline arm</td><td class="num">2.3× faster</td><td class="num">1.8× faster</td><td class="num">baseline</td><td class="num">4.1× slower</td></tr>
+    <tr><td>CI gates</td><td class="num"><span class="chip pass">green</span></td><td class="num"><span class="chip pass">green</span></td><td class="num"><span class="chip pass">green</span></td><td class="num"><span class="chip fail">red</span></td></tr>
+    <tr><td>Lint errors</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">12</td></tr>
+    <tr><td>Test cases added</td><td class="num">12 · 6+6</td><td class="num">12 · 6+6</td><td class="num">8 · 4+4</td><td class="num">2 · 1+1</td></tr>
+    <tr><td><strong>Assertions on a resolved colour</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>0</strong></td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><strong>Both agents finished ahead of both developers.</strong> Against the senior
+  developer — the only arm that represents this task done normally by someone fluent in the
+  stack, and therefore the baseline — they came in <strong>2.3×</strong> and
+  <strong>1.8×</strong> faster. The 2h 25m arm carries one-off React ramp-up that would not
+  recur on a second feature, so it reads as the cost of an unfamiliar framework rather than as
+  the human baseline.</li>
+  <li><strong>The faster arms came in cleaner, not dirtier.</strong> Lint errors ran 0 · 0 · 0 ·
+  12 and test cases 12 · 12 · 8 · 2, so every mechanical measure separates the three faster arms
+  from the slowest one and puts the two agents at the top of the test column. The arm that
+  overran wrote two cases — the normal response to a task running four times long, and the part
+  that does not happen to an agent under time pressure.</li>
+  <li><strong>Green gates did not mean correct.</strong> Review of one green branch still turned
+  up two user-visible defects, while the 12 lint errors on the red arm were all mechanical —
+  formatting and one dead export, twenty minutes of cleanup. The gates caught the cheap problems
+  on the arm that had them and none of the expensive ones on the arm that did not.</li>
+  <li><strong>Not one of the 34 test cases asserts a resolved colour.</strong> Two agents and two
+  developers, working separately, all covered toggle state and local-storage persistence — the
+  half jsdom reaches — and left the palette, the cascade and the computed contrast untested.
+  Every arm needed a person to open a browser, which is why that step sits inside all four
+  clocks.</li>
+</ul>
+<div class="note finding">
+  <span class="note-label">The takeaway</span>
+  <p>The speed is real and it did not cost quality on the measures this run took. What it did not
+  buy is coverage of the half that breaks: the one gap shared by all four arms is that nothing
+  any of them wrote checks a colour, so the only sensor on the dark palette is still a person
+  looking at it. The next thing to test is that sensor — a computed-colour assertion in the
+  build loop — rather than another four-way build.</p>
+</div>
+<p style="font-size:14px;color:var(--muted)">Wall-clock figures are self-reported to the minute,
+not instrumented, and no token or cost figure was captured for either agent arm — this run
+answers how fast, not how cheap. The frontend gates the arms were judged on are documented on
+the <a href="technical.html">technical track</a>.</p>
 
 <div class="pager">
   <a href="business.html"><span class="p-dir">← Previous</span>Business &amp; organization</a>
